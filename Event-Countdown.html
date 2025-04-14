@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベントカウントダウン</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        h1 {
+            font-weight: 300;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .countdown-box {
+            margin: 3rem 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .countdown-item {
+            min-width: 100px;
+            padding: 1rem 0.5rem;
+            border-bottom: 2px solid #000;
+        }
+        
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+        
+        .countdown-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+            opacity: 0.7;
+        }
+        
+        .event-date {
+            font-size: 1.2rem;
+            margin: 2rem 0;
+            letter-spacing: 0.05em;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 500px) {
+            .countdown-item {
+                min-width: 70px;
+            }
+            
+            .countdown-number {
+                font-size: 2rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>TMU STARTER SET</h3>
+        <h1>イベント開催まで</h1>
+        
+        <div class="countdown-box">
+            <div class="countdown-item">
+                <span class="countdown-number" id="days">--</span>
+                <span class="countdown-label">日</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="hours">--</span>
+                <span class="countdown-label">時間</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="minutes">--</span>
+                <span class="countdown-label">分</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="seconds">--</span>
+                <span class="countdown-label">秒</span>
+            </div>
+        </div>
+        
+        <div class="event-date">2025年4月21日 18:30開始</div>
+        <div class="event-place">場所：都立大学南大沢C 図書館1F プレゼンテーションルーム
+        </div>
+        <div class="place-description">場所の詳細は<a href="https://www.lib.tmu.ac.jp/minami-osawa/guide.html">こちら</a>をご覧ください。(本館 地上一階⑨)</div>
+        <div class="footer">当日はお楽しみに！</div>
+    </div>
+
+    <script>
+        // イベントの日時を設定（日本時間）
+        const eventDate = new Date('2025-04-21T18:30:00+09:00');
+        
+        // カウントダウンを更新する関数
+        function updateCountdown() {
+            const now = new Date();
+            const diff = eventDate - now;
+            
+            // イベントが既に開始している場合
+            if (diff <= 0) {
+                document.querySelector('.countdown-box').innerHTML = '<div style="font-size: 2rem; font-weight: bold;">イベント開催中！</div>';
+                return;
+            }
+            
+            // 残り時間を計算
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // HTML要素を更新
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+        
+        // ページ読み込み時に一度実行
+        updateCountdown();
+        
+        // 1秒ごとにカウントダウンを更新
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
