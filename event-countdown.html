@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベントカウントダウン</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            /* モバイル用の調整を追加 */
+            overflow-x: hidden;
+        }
+        .backgroundimage {
+            position: fixed; /* absoluteからfixedに変更 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/GDGoC-starterpack-back.png');
+            background-size: 250%; /* coverから150%に変更 */
+            background-position: center center; /* 中央揃え */
+            filter: blur(5px);
+            z-index: -1;
+            overflow: hidden; /* はみ出た部分を隠す */
+            background-repeat: no-repeat; /* 背景の繰り返しを防止 */
+            background-attachment: fixed; /* スクロールしても位置固定 */
+            /* ---animation--- */
+            animation: backgroundFloat 20s infinite ease-in-out;
+        }
+        /* ── 背景をゆっくり動かすアニメーション ── */
+        @keyframes backgroundFloat {
+        0%   { background-position: 50% 50%; }
+        25%  { background-position: 51% 49%; }
+        50%  { background-position: 49% 51%; }
+        75%  { background-position: 50% 48%; }
+        100% { background-position: 50% 50%; }
+        }
+        
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        h1 {
+            font-weight: 300;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+        a {
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #af7e1d;
+            font-weight: 700;
+            }
+        a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        a:visited {
+            color: #17c0cc; /* 訪問済みの紫をカスタム */
+        }
+        
+        .countdown-box {
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .countdown-item {
+            min-width: 100px;
+            padding: 1rem 0.5rem;
+            border-bottom: 2px solid #000;
+        }
+        
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+        
+        .countdown-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+            opacity: 0.7;
+        }
+        
+        .event-date {
+            font-size: 1.2rem;
+            margin: 2rem 0;
+            letter-spacing: 0.05em;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        .footer a {
+                font-size: 0.8rem;
+                text-decoration: none;
+                color: #2c2c2c;
+        }
+
+        /* ============================================
+        BUBBLE ANIMATION SECTION
+        泡がふわっと上昇するアニメーション演出
+        ============================================ */
+        /* 泡全体をまとめる */
+        .bubbles {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2; /* 背景より前面に */
+        }
+
+        /* 各泡（span）が個別アニメーション */
+        .bubbles span {
+        position: absolute;
+        bottom: -50px;
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        animation: rise 10s infinite ease-in;
+        }
+
+        /* 泡ごとのランダム配置＆アニメーション速度変化 */
+        .bubbles span:nth-child(1) {
+        left: 10%;
+        animation-duration: 8s;
+        width: 8px;
+        height: 8px;
+        }
+        .bubbles span:nth-child(2) {
+        left: 25%;
+        animation-duration: 12s;
+        }
+        .bubbles span:nth-child(3) {
+        left: 50%;
+        animation-duration: 10s;
+        width: 12px;
+        height: 12px;
+        }
+        .bubbles span:nth-child(4) {
+        left: 70%;
+        animation-duration: 9s;
+        }
+        .bubbles span:nth-child(5) {
+        left: 90%;
+        animation-duration: 11s;
+        width: 6px;
+        height: 6px;
+        }
+
+        @keyframes rise {
+        0% {
+            transform: translateY(0) scale(1);
+            opacity: 0.6;
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-120vh) scale(1.5);
+            opacity: 0;
+        }
+        }
+        
+        @media (max-width: 500px) {
+            body {
+                align-items: flex-start; /* 上部から配置開始 */
+                padding-top: 1rem;
+            }
+
+            .event-discription {
+                font-size: 0.7rem;
+                margin: 0 auto;
+                padding: 0 1rem;
+            }   
+
+            .container {
+                margin: 1rem 0;
+                padding: 1rem 0.5rem;
+            }
+
+            .countdown-item {
+                min-width: 50px;
+            }
+            
+            .countdown-number {
+                font-size: 2rem;
+            }
+            .countdown-box {
+                flex-direction: row;
+                align-items: center;
+                margin: 2rem 0;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+
+
+            
+
+            
+            .place-description,
+            .online-link {
+                font-size: 0.8rem;
+                /* 左揃え */
+                text-align: center;
+                margin: 0 auto;
+                
+            }
+            .event-place {
+                font-size: 12px;
+                /* 左揃え */
+                text-align: center;
+                margin: 0 auto;
+                
+            }
+            .footer {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class ="backgroundimage"></div>
+    <div class="backgroundimage">
+        <div class="bubbles">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+
+    
+    <div class="container">
+        <h3>TMU STARTER SET</h3>
+        <div class="event-discription">
+            2025年に入学した都立大の新入生に向けた新歓イベントです。<br>
+            都立大のWi-Fi設定，IT環境にまつわるあれこれの紹介をします。<br>
+            面倒な環境構築をこの際に一緒に済ませてしまいましょう！<br>
+        </div>
+        <h1>イベント開催まで</h1>
+        
+        <div class="countdown-box">
+            <div class="countdown-item">
+                <span class="countdown-number" id="days">--</span>
+                <span class="countdown-label">日</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="hours">--</span>
+                <span class="countdown-label">時間</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="minutes">--</span>
+                <span class="countdown-label">分</span>
+            </div>
+            <div class="countdown-item">
+                <span class="countdown-number" id="seconds">--</span>
+                <span class="countdown-label">秒</span>
+            </div>
+        </div>
+        
+        <div class="event-date">2025年4月21日 18:30開始</div>
+        <div class="event-place">場所：都立大南大沢C 図書館1Fプレゼンテーションルーム
+        </div>
+        <div class="place-description">場所の詳細は<a href="https://www.lib.tmu.ac.jp/minami-osawa/guide.html"class="link-button">こちら</a>をご覧ください。(本館 地上一階⑨)</div><br>
+        <div class="online-link">オンライン参加の方は<a href="https://calendar.google.com/calendar/u/0/share?slt=1AcO8lv0Hk6NZiUK0NbHvq7x-fDxOyEjS2UL8y11HYUv1_LEbRMPddD1h0yAD08I0NTXgdpqrBw6Bjg&pli=1"class="link-button">こちら</a>から参加登録ができます。</div>
+        <div class="footer"><a href="University Life Hub.html">イベント当日、サイトが更新されます。お楽しみに！</a></div>
+    </div>
+
+    <script>
+        // イベントの日時を設定（日本時間）
+        const eventDate = new Date('2025-04-21T18:30:00+09:00');
+        
+        // カウントダウンを更新する関数
+        function updateCountdown() {
+            const now = new Date();
+            const diff = eventDate - now;
+            
+            // イベントが既に開始している場合
+            if (diff <= 0) {
+                document.querySelector('.countdown-box').innerHTML = '<div style="font-size: 2rem; font-weight: bold;">イベント開催中！</div>';
+                return;
+            }
+            
+            // 残り時間を計算
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // HTML要素を更新
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+        
+        // ページ読み込み時に一度実行
+        updateCountdown();
+        
+        // 1秒ごとにカウントダウンを更新
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
